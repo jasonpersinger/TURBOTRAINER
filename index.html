@@ -239,9 +239,18 @@
         var a = el.querySelector('td > a');
         if (a) name = a.textContent.trim();
       }
-      var rankEl = document.getElementById('amt_skill' + id);
-      var rank = rankEl ? rankEl.textContent.trim() : '';
-      skills.push({ id: id, name: name, rank: rank });
+      var get = function (pfx) {
+        var el = document.getElementById(pfx + id);
+        return el ? el.textContent.replace(/\u00a0/g, ' ').trim() : '';
+      };
+      skills.push({
+        id:      id,
+        name:    name,
+        rank:    get('amt_skill'),
+        cost:    get('sklcost'),
+        recover: get('skrcost'),
+        max:     get('maxtrn')
+      });
     });
 
     if (!skills.length) { alert('TurboTrainer: no skills found on this page.'); return; }
@@ -272,26 +281,74 @@
     ov.appendChild(hdr);
 
     var list = document.createElement('div');
-    list.style.cssText = 'flex:1;overflow-y:auto;padding:0 20px;';
+    list.style.cssText = 'flex:1;overflow-y:auto;';
+
+    var COL = {
+      name:    'flex:1;min-width:140px;',
+      cost:    'width:70px;text-align:center;',
+      rank:    'width:50px;text-align:center;',
+      max:     'width:60px;text-align:center;',
+      recover: 'width:70px;text-align:center;',
+      btns:    'display:flex;gap:3px;flex-shrink:0;'
+    };
+
+    var ROWBASE = M + 'display:flex;align-items:center;gap:10px;padding:6px 20px;';
+
+    var hrow = document.createElement('div');
+    hrow.style.cssText = ROWBASE + 'border-bottom:1px solid #2e2e2e;background:#1a1a1a;position:sticky;top:0;';
+    var HL = 'font-size:10px;letter-spacing:2px;color:#555;text-transform:uppercase;';
+    [['name','Skill Name'],['cost','Train Cost'],['rank','Ranks'],['max','Max'],['recover','Recover Cost']].forEach(function(pair) {
+      var h = document.createElement('span');
+      h.textContent = pair[1];
+      h.style.cssText = HL + COL[pair[0]];
+      hrow.appendChild(h);
+    });
+    var hbtns = document.createElement('span');
+    hbtns.style.cssText = HL + 'width:220px;text-align:center;';
+    hbtns.textContent = 'adjust';
+    hrow.appendChild(hbtns);
+    list.appendChild(hrow);
 
     skills.forEach(function (sk) {
       var row = document.createElement('div');
-      row.style.cssText = M + 'display:flex;align-items:center;padding:7px 0;'
-        + 'border-bottom:1px solid #1e1e1e;gap:10px;';
+      row.style.cssText = ROWBASE + 'border-bottom:1px solid #1a1a1a;';
+      row.onmouseover = function () { row.style.background = '#1a1a1a'; };
+      row.onmouseout  = function () { row.style.background = ''; };
 
       var nameEl = document.createElement('span');
       nameEl.textContent = sk.name;
-      nameEl.style.cssText = 'flex:1;font-size:13px;color:#aaa;';
+      nameEl.style.cssText = 'font-size:13px;color:#aaa;' + COL.name;
       row.appendChild(nameEl);
+
+      var costEl = document.createElement('span');
+      costEl.textContent = sk.cost;
+      costEl.style.cssText = 'font-size:12px;color:#666;' + COL.cost;
+      row.appendChild(costEl);
 
       var rankEl = document.createElement('span');
       rankEl.id = 'tt-rank-' + sk.id;
       rankEl.textContent = sk.rank;
-      rankEl.style.cssText = 'font-size:13px;color:#e8e8e8;min-width:36px;text-align:right;margin-right:10px;';
+      rankEl.style.cssText = 'font-size:13px;color:#e8e8e8;font-weight:bold;' + COL.rank;
       row.appendChild(rankEl);
 
+      var maxEl = document.createElement('span');
+      maxEl.textContent = sk.max;
+      maxEl.style.cssText = 'font-size:12px;color:#555;' + COL.max;
+      row.appendChild(maxEl);
+
+      var recEl = document.createElement('span');
+      recEl.textContent = sk.recover;
+      recEl.style.cssText = 'font-size:12px;color:#666;' + COL.recover;
+      row.appendChild(recEl);
+
       var grp = document.createElement('div');
-      grp.style.cssText = 'display:flex;gap:3px;flex-shrink:0;';
+      grp.style.cssText = COL.btns;
+
+      var refresh = function () {
+        var src = document.getElementById('amt_skill' + sk.id);
+        var dst = document.getElementById('tt-rank-' + sk.id);
+        if (src && dst) dst.textContent = src.textContent.trim();
+      };
 
       [10, 5, 1].forEach(function (n) {
         var b = document.createElement('button');
@@ -299,17 +356,12 @@
         b.type = 'button';
         b.style.cssText = M + 'background:#1e1a0e;border:1px solid #c8a84a;color:#c8a84a;'
           + 'font-size:11px;padding:3px 8px;cursor:pointer;';
-        b.addEventListener('click', function () {
-          for (var i = 0; i < n; i++) upskill(sk.id);
-          var r = document.getElementById('amt_skill' + sk.id);
-          var d = document.getElementById('tt-rank-' + sk.id);
-          if (r && d) d.textContent = r.textContent.trim();
-        });
+        b.addEventListener('click', function () { for (var i = 0; i < n; i++) upskill(sk.id); refresh(); });
         grp.appendChild(b);
       });
 
       var sep = document.createElement('div');
-      sep.style.cssText = 'width:1px;background:#2e2e2e;margin:0 4px;align-self:stretch;';
+      sep.style.cssText = 'width:1px;background:#2e2e2e;margin:0 3px;align-self:stretch;';
       grp.appendChild(sep);
 
       [1, 5, 10].forEach(function (n) {
@@ -318,12 +370,7 @@
         b.type = 'button';
         b.style.cssText = M + 'background:#141414;border:1px solid #3a3a3a;color:#666;'
           + 'font-size:11px;padding:3px 8px;cursor:pointer;';
-        b.addEventListener('click', function () {
-          for (var i = 0; i < n; i++) downskill(sk.id);
-          var r = document.getElementById('amt_skill' + sk.id);
-          var d = document.getElementById('tt-rank-' + sk.id);
-          if (r && d) d.textContent = r.textContent.trim();
-        });
+        b.addEventListener('click', function () { for (var i = 0; i < n; i++) downskill(sk.id); refresh(); });
         grp.appendChild(b);
       });
 
