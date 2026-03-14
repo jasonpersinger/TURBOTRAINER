@@ -274,14 +274,20 @@
     hdrTop.appendChild(ttitle);
 
     var charInfo = (function () {
-      var parts = [];
-      var nameEl = document.querySelector('#leftside .invS1');
-      if (nameEl) parts.push(nameEl.textContent.trim());
-      document.querySelectorAll('#leftside .normS2').forEach(function (lbl) {
-        var val = lbl.closest('tr') && lbl.closest('tr').querySelector('.normS1');
-        if (val) parts.push(lbl.textContent.trim() + ' ' + val.textContent.trim());
-      });
-      return parts.join('  \u00b7  ');
+      try {
+        var parts = [];
+        var nameEl = document.querySelector('#leftside .invS1');
+        if (nameEl) parts.push(nameEl.textContent.trim());
+        document.querySelectorAll('#leftside .normS2').forEach(function (lbl) {
+          try {
+            var row = lbl.parentElement;
+            while (row && row.tagName !== 'TR') row = row.parentElement;
+            var val = row && row.querySelector('.normS1');
+            if (val) parts.push(lbl.textContent.trim() + ' ' + val.textContent.trim());
+          } catch (e) {}
+        });
+        return parts.join('  \u00b7  ');
+      } catch (e) { return ''; }
     })();
 
     var charEl = document.createElement('span');
