@@ -236,13 +236,8 @@
       var el = u;
       while (el && el.tagName !== 'TR') el = el.parentElement;
       if (el) {
-        var tds = el.querySelectorAll('td');
-        for (var i = 0; i < tds.length; i++) {
-          if (!tds[i].querySelector('img[onclick]')) {
-            var t = tds[i].textContent.trim();
-            if (t && t.length > 1 && t.length < 80) { name = t; break; }
-          }
-        }
+        var a = el.querySelector('td > a');
+        if (a) name = a.textContent.trim();
       }
       skills.push({ id: id, name: name });
     });
