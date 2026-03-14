@@ -458,8 +458,6 @@
 </div><!-- /.wrap -->
 
 <script>
-  // Build the bookmarklet payload as a real function, then serialize it.
-  // This avoids manual string escaping and runs in the context of the trainer page.
   function turboTrainer() {
     var STEPS = [5, 10];
     var S = 'font-size:11px;cursor:pointer;margin:0 2px;padding:2px 5px;'
@@ -469,7 +467,7 @@
     function mk(label, fn) {
       var b = document.createElement('button');
       b.textContent = label;
-      b.type = 'button';   // prevents form submission
+      b.type = 'button';
       b.style.cssText = S;
       b.addEventListener('click', fn);
       return b;
@@ -481,14 +479,12 @@
       var id = parseInt(m[1]);
       var d  = document.querySelector('img[onclick="downskill(' + id + ')"]');
 
-      // Insert +10 then +5 after the up-button (reverse so +5 ends up closest)
       STEPS.slice().reverse().forEach(function (n) {
         u.insertAdjacentElement('afterend', mk('+' + n, function () {
           for (var i = 0; i < n; i++) upskill(id);
         }));
       });
 
-      // Insert -5 then -10 after the down-button
       if (d) {
         STEPS.forEach(function (n) {
           d.insertAdjacentElement('afterend', mk('-' + n, function () {
