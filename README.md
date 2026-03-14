@@ -7,7 +7,7 @@ Adds **+5, +10, -5, and -10** buttons to the GemStone IV skill trainer page so y
 ## How to install
 
 **1. Go to the TURBOTRAINER page:**
-👉 https://jasonpersinger.github.io/GS4-TURBOTRAINER
+👉 https://turbotrainer.gamemasters.lol
 
 **2. Drag the green button to your bookmarks bar.**
 (If you don't see the bookmarks bar, press `Ctrl+Shift+B` on Windows/Linux or `⌘+Shift+B` on Mac.)
@@ -36,7 +36,7 @@ No. TURBOTRAINER is a bookmarklet — it's just a button that runs a tiny piece 
 
 ## It stopped working after a page update
 
-Click the bookmark again — it re-runs every time you click it. If the buttons don't appear, the trainer page may have changed. Open an [issue](https://github.com/jasonpersinger/GS4-TURBOTRAINER/issues) and I'll take a look.
+Click the bookmark again — it re-runs every time you click it. If the buttons don't appear, the trainer page may have changed. Open an [issue](https://github.com/jasonpersinger/TURBOTRAINER/issues) and I'll take a look.
 
 ---
 
