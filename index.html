@@ -263,13 +263,15 @@
       + 'display:flex;flex-direction:column;color:#c8c8c8;';
 
     var hdr = document.createElement('div');
-    hdr.style.cssText = M + 'padding:14px 20px;border-bottom:1px solid #2e2e2e;'
-      + 'display:flex;justify-content:space-between;align-items:center;flex-shrink:0;';
+    hdr.style.cssText = M + 'padding:12px 20px;border-bottom:1px solid #2e2e2e;flex-shrink:0;';
+
+    var hdrTop = document.createElement('div');
+    hdrTop.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;';
 
     var ttitle = document.createElement('span');
     ttitle.textContent = '\u26a1 GS4 TurboTrainer';
     ttitle.style.cssText = 'color:#e8e8e8;font-weight:bold;letter-spacing:2px;font-size:15px;';
-    hdr.appendChild(ttitle);
+    hdrTop.appendChild(ttitle);
 
     var closeBtn = document.createElement('button');
     closeBtn.textContent = 'x  close';
@@ -277,8 +279,47 @@
     closeBtn.style.cssText = M + 'background:none;border:1px solid #3a3a3a;color:#666;'
       + 'font-size:11px;padding:4px 10px;cursor:pointer;letter-spacing:1px;';
     closeBtn.addEventListener('click', function () { ov.remove(); });
-    hdr.appendChild(closeBtn);
+    hdrTop.appendChild(closeBtn);
+    hdr.appendChild(hdrTop);
+
+    var getTP = function (id) {
+      var el = document.getElementById(id);
+      return el ? el.textContent.trim() : '?';
+    };
+
+    var hdrPoints = document.createElement('div');
+    hdrPoints.style.cssText = 'display:flex;gap:28px;font-size:12px;';
+
+    var pointDefs = [
+      ['Physical TPs', 'disp_phy_tp'],
+      ['Mental TPs',   'disp_mnt_tp'],
+      ['Phy\u2192Mnt', 'phytomnt'],
+      ['Mnt\u2192Phy', 'mnttophy']
+    ];
+
+    pointDefs.forEach(function (def) {
+      var wrap = document.createElement('span');
+      var lbl = document.createElement('span');
+      lbl.textContent = def[0] + ': ';
+      lbl.style.cssText = 'color:#555;letter-spacing:1px;font-size:10px;text-transform:uppercase;';
+      var val = document.createElement('span');
+      val.id = 'tt-tp-' + def[1];
+      val.textContent = getTP(def[1]);
+      val.style.cssText = 'color:#c8a84a;font-weight:bold;';
+      wrap.appendChild(lbl);
+      wrap.appendChild(val);
+      hdrPoints.appendChild(wrap);
+    });
+
+    hdr.appendChild(hdrPoints);
     ov.appendChild(hdr);
+
+    var refreshPoints = function () {
+      pointDefs.forEach(function (def) {
+        var el = document.getElementById('tt-tp-' + def[1]);
+        if (el) el.textContent = getTP(def[1]);
+      });
+    };
 
     var list = document.createElement('div');
     list.style.cssText = 'flex:1;overflow-y:auto;';
@@ -315,6 +356,7 @@
         var src = document.getElementById('amt_skill' + sk.id);
         var dst = document.getElementById('tt-rank-' + sk.id);
         if (src && dst) dst.textContent = src.textContent.trim();
+        refreshPoints();
       };
 
       var recEl = document.createElement('span');
