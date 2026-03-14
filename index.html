@@ -8,195 +8,214 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: Georgia, serif;
-      background: #f5f2eb;
-      color: #222;
+      background: #141414;
+      color: #c8c8c8;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      line-height: 1.7;
       padding: 48px 24px 80px;
     }
 
     .wrap {
-      max-width: 640px;
+      max-width: 620px;
       margin: 0 auto;
     }
 
-    h1 {
-      font-size: 28px;
+    /* ── Header ── */
+    .site-title {
+      font-size: 22px;
       font-weight: bold;
-      letter-spacing: 1px;
-      margin-bottom: 4px;
-    }
-
-    .subtitle {
-      font-size: 13px;
-      color: #777;
-      margin-bottom: 36px;
-    }
-
-    hr {
-      border: none;
-      border-top: 1px solid #ccc;
-      margin: 36px 0;
-    }
-
-    h2 {
-      font-size: 14px;
-      text-transform: uppercase;
+      color: #e8e8e8;
       letter-spacing: 2px;
-      color: #555;
+      text-transform: uppercase;
+    }
+
+    .site-sub {
+      color: #666;
+      font-size: 12px;
+      letter-spacing: 1px;
+      margin-top: 3px;
+      margin-bottom: 40px;
+    }
+
+    /* ── Section headings ── */
+    h2 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #c8a84a;
+      border-bottom: 1px solid #2a2a2a;
+      padding-bottom: 6px;
       margin-bottom: 20px;
     }
 
-    /* Bookmarklet button */
-    .drag-area {
-      text-align: center;
-      margin: 28px 0;
+    section { margin-bottom: 44px; }
+
+    /* ── Bookmarklet ── */
+    .drag-wrap {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      border: 1px solid #2e2e2e;
+      background: #1c1c1c;
     }
 
     .bookmarklet-btn {
       display: inline-block;
-      background: #2a6ebb;
-      color: #fff;
-      font-family: Georgia, serif;
-      font-size: 17px;
-      padding: 11px 26px;
+      background: #c8a84a;
+      color: #141414;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      padding: 9px 18px;
       text-decoration: none;
-      border-radius: 4px;
+      white-space: nowrap;
       cursor: grab;
       user-select: none;
+      flex-shrink: 0;
     }
 
-    .bookmarklet-btn:active { cursor: grabbing; opacity: 0.85; }
+    .bookmarklet-btn:active { cursor: grabbing; opacity: 0.8; }
 
-    .drag-hint {
+    .drag-note {
       font-size: 12px;
-      color: #888;
-      margin-top: 10px;
+      color: #666;
+      line-height: 1.5;
     }
 
-    /* Steps */
+    /* ── Steps ── */
     ol {
-      padding-left: 20px;
-      line-height: 1.9;
-      font-size: 15px;
+      list-style: none;
+      counter-reset: steps;
     }
 
-    ol li { margin-bottom: 6px; }
+    ol li {
+      counter-increment: steps;
+      display: flex;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
 
-    a { color: #2a6ebb; }
+    ol li::before {
+      content: counter(steps, decimal-leading-zero);
+      color: #c8a84a;
+      flex-shrink: 0;
+    }
+
+    a { color: #c8a84a; text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
     kbd {
-      background: #eee;
-      border: 1px solid #bbb;
-      border-radius: 3px;
-      padding: 1px 6px;
+      background: #222;
+      border: 1px solid #3a3a3a;
+      padding: 0 5px;
+      font-family: 'Courier New', Courier, monospace;
       font-size: 12px;
-      font-family: monospace;
+      color: #aaa;
     }
 
-    /* Before/after */
+    /* ── Before / After ── */
     .ba {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-top: 8px;
+      gap: 0;
+      border: 1px solid #2e2e2e;
+    }
+
+    .ba-col {
+      padding: 16px 18px;
+    }
+
+    .ba-col:first-child {
+      border-right: 1px solid #2e2e2e;
     }
 
     .ba-label {
-      font-size: 11px;
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #999;
-      margin-bottom: 8px;
+      letter-spacing: 3px;
+      color: #555;
+      margin-bottom: 12px;
     }
 
     .mock-row {
       display: flex;
       align-items: center;
-      gap: 4px;
-      margin-bottom: 6px;
-      font-size: 13px;
+      gap: 3px;
+      margin-bottom: 7px;
+      flex-wrap: wrap;
     }
 
-    .btn-old {
-      padding: 2px 6px;
-      border: 1px solid #bbb;
-      background: #eee;
-      color: #555;
-      font-size: 11px;
-      font-family: monospace;
-    }
+    .bn { padding: 1px 5px; font-size: 11px; font-family: 'Courier New', monospace; }
+    .bn-old { border: 1px solid #3a3a3a; color: #666; background: #1c1c1c; }
+    .bn-new { border: 1px solid #c8a84a; color: #c8a84a; background: #1e1a0e; }
+    .sn { color: #888; margin: 0 3px; font-size: 12px; }
 
-    .btn-new {
-      padding: 2px 6px;
-      border: 1px solid #2a6ebb;
-      background: #e8f0fb;
-      color: #2a6ebb;
-      font-size: 11px;
-      font-family: monospace;
-    }
-
-    .skill-name { color: #444; margin: 0 3px; }
-
+    /* ── Footer ── */
     footer {
       margin-top: 60px;
-      font-size: 12px;
-      color: #aaa;
-      text-align: center;
+      padding-top: 20px;
+      border-top: 1px solid #222;
+      font-size: 11px;
+      color: #444;
+      display: flex;
+      justify-content: space-between;
     }
 
-    footer a { color: #aaa; }
+    footer a { color: #555; }
+    footer a:hover { color: #c8a84a; text-decoration: none; }
   </style>
 </head>
 <body>
 <div class="wrap">
 
-  <h1>GS4 TurboTrainer</h1>
-  <div class="subtitle">Bulk skill training buttons for GemStone IV</div>
+  <div class="site-title">GS4 TurboTrainer</div>
+  <div class="site-sub">bulk skill training for gemstone iv</div>
 
-  <h2>Install</h2>
-
-  <div class="drag-area">
-    <a id="bookmarklet" class="bookmarklet-btn" title="Drag me to your bookmarks bar">
-      ⚡ GS4 TurboTrainer
-    </a>
-    <div class="drag-hint">Drag this button to your bookmarks bar</div>
-  </div>
-
-  <hr>
-
-  <h2>How to use</h2>
-
-  <ol>
-    <li>If your bookmarks bar isn't showing, press <kbd>Ctrl+Shift+B</kbd> (or <kbd>⌘+Shift+B</kbd> on Mac)</li>
-    <li>Drag the button above to your bookmarks bar</li>
-    <li>Log in and open the <a href="https://www.play.net/gs4/play/cm/trainer.asp" target="_blank">GS4 skill trainer</a></li>
-    <li>Click <strong>⚡ GS4 TurboTrainer</strong> in your bookmarks bar</li>
-    <li>New +5, +10, -5, -10 buttons appear next to every skill</li>
-    <li>Submit your training as normal when done</li>
-  </ol>
-
-  <hr>
-
-  <h2>Before &amp; After</h2>
-
-  <div class="ba">
-    <div>
-      <div class="ba-label">Before</div>
-      <div class="mock-row"><span class="btn-old">+1</span><span class="skill-name">Climbing</span><span class="btn-old">-1</span></div>
-      <div class="mock-row"><span class="btn-old">+1</span><span class="skill-name">Swimming</span><span class="btn-old">-1</span></div>
-      <div class="mock-row"><span class="btn-old">+1</span><span class="skill-name">Two Weapon Combat</span><span class="btn-old">-1</span></div>
+  <section>
+    <h2>Install</h2>
+    <div class="drag-wrap">
+      <a id="bookmarklet" class="bookmarklet-btn" title="Drag to bookmarks bar">⚡ GS4 TurboTrainer</a>
+      <div class="drag-note">
+        Drag this button to your bookmarks bar.<br>
+        If the bar is hidden: <kbd>Ctrl+Shift+B</kbd> / <kbd>⌘+Shift+B</kbd>
+      </div>
     </div>
-    <div>
-      <div class="ba-label">After</div>
-      <div class="mock-row"><span class="btn-old">+1</span><span class="btn-new">+5</span><span class="btn-new">+10</span><span class="skill-name">Climbing</span><span class="btn-old">-1</span><span class="btn-new">-5</span><span class="btn-new">-10</span></div>
-      <div class="mock-row"><span class="btn-old">+1</span><span class="btn-new">+5</span><span class="btn-new">+10</span><span class="skill-name">Swimming</span><span class="btn-old">-1</span><span class="btn-new">-5</span><span class="btn-new">-10</span></div>
-      <div class="mock-row"><span class="btn-old">+1</span><span class="btn-new">+5</span><span class="btn-new">+10</span><span class="skill-name">Two Weapon Combat</span><span class="btn-old">-1</span><span class="btn-new">-5</span><span class="btn-new">-10</span></div>
+  </section>
+
+  <section>
+    <h2>Usage</h2>
+    <ol>
+      <li>Log in and open the <a href="https://www.play.net/gs4/play/cm/trainer.asp" target="_blank">GS4 skill trainer</a></li>
+      <li>Click <strong>⚡ GS4 TurboTrainer</strong> in your bookmarks bar</li>
+      <li>+5, +10, -5, -10 buttons appear next to every skill</li>
+      <li>Submit your training as normal when done</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Before &amp; After</h2>
+    <div class="ba">
+      <div class="ba-col">
+        <div class="ba-label">Before</div>
+        <div class="mock-row"><span class="bn bn-old">+1</span><span class="sn">Climbing</span><span class="bn bn-old">-1</span></div>
+        <div class="mock-row"><span class="bn bn-old">+1</span><span class="sn">Swimming</span><span class="bn bn-old">-1</span></div>
+        <div class="mock-row"><span class="bn bn-old">+1</span><span class="sn">Two Weapon Combat</span><span class="bn bn-old">-1</span></div>
+      </div>
+      <div class="ba-col">
+        <div class="ba-label">After</div>
+        <div class="mock-row"><span class="bn bn-old">+1</span><span class="bn bn-new">+5</span><span class="bn bn-new">+10</span><span class="sn">Climbing</span><span class="bn bn-old">-1</span><span class="bn bn-new">-5</span><span class="bn bn-new">-10</span></div>
+        <div class="mock-row"><span class="bn bn-old">+1</span><span class="bn bn-new">+5</span><span class="bn bn-new">+10</span><span class="sn">Swimming</span><span class="bn bn-old">-1</span><span class="bn bn-new">-5</span><span class="bn bn-new">-10</span></div>
+        <div class="mock-row"><span class="bn bn-old">+1</span><span class="bn bn-new">+5</span><span class="bn bn-new">+10</span><span class="sn">Two Weapon Combat</span><span class="bn bn-old">-1</span><span class="bn bn-new">-5</span><span class="bn bn-new">-10</span></div>
+      </div>
     </div>
-  </div>
+  </section>
 
   <footer>
-    <a href="https://github.com/jasonpersinger/GS4-TURBOTRAINER" target="_blank">GitHub</a>
-    &nbsp;·&nbsp; Not affiliated with Simutronics Corp
+    <span>not affiliated with simutronics corp</span>
+    <a href="https://github.com/jasonpersinger/GS4-TURBOTRAINER" target="_blank">github</a>
   </footer>
 
 </div>
@@ -240,8 +259,8 @@
 
     var msg = document.createElement('div');
     msg.textContent = 'TurboTrainer active';
-    msg.style.cssText = 'position:fixed;top:12px;right:12px;background:#2a6ebb;color:#fff;'
-      + 'font-family:sans-serif;font-size:13px;padding:6px 14px;border-radius:4px;z-index:9999;';
+    msg.style.cssText = 'position:fixed;top:12px;right:12px;background:#c8a84a;color:#141414;'
+      + 'font-family:monospace;font-size:12px;font-weight:bold;padding:6px 14px;z-index:9999;';
     document.body.appendChild(msg);
     setTimeout(function () { msg.remove(); }, 2500);
   }
