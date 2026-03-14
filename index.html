@@ -273,6 +273,22 @@
     ttitle.style.cssText = 'color:#e8e8e8;font-weight:bold;letter-spacing:2px;font-size:15px;';
     hdrTop.appendChild(ttitle);
 
+    var charInfo = (function () {
+      var parts = [];
+      var nameEl = document.querySelector('#leftside .invS1');
+      if (nameEl) parts.push(nameEl.textContent.trim());
+      document.querySelectorAll('#leftside .normS2').forEach(function (lbl) {
+        var val = lbl.closest('tr') && lbl.closest('tr').querySelector('.normS1');
+        if (val) parts.push(lbl.textContent.trim() + ' ' + val.textContent.trim());
+      });
+      return parts.join('  \u00b7  ');
+    })();
+
+    var charEl = document.createElement('span');
+    charEl.textContent = charInfo;
+    charEl.style.cssText = 'font-size:12px;color:#888;letter-spacing:1px;';
+    hdrTop.appendChild(charEl);
+
     var closeBtn = document.createElement('button');
     closeBtn.textContent = 'x  close';
     closeBtn.type = 'button';
