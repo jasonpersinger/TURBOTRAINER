@@ -214,25 +214,29 @@
       return;
     }
 
-    var skills = [];
-    document.querySelectorAll('img[onclick^="upskill("]').forEach(function (u) {
-      var m = u.getAttribute('onclick').match(/upskill\((\d+)\)/);
+    var categories = [];
+    var currentCat = null;
+
+    document.querySelectorAll('tr').forEach(function (tr) {
+      var catTd = tr.querySelector('td.dimBG');
+      if (catTd) {
+        currentCat = { name: catTd.textContent.trim(), skills: [] };
+        categories.push(currentCat);
+        return;
+      }
+      var upBtn = tr.querySelector('img[onclick^="upskill("]');
+      if (!upBtn || !currentCat) return;
+      var m = upBtn.getAttribute('onclick').match(/upskill\((\d+)\)/);
       if (!m) return;
       var id = parseInt(m[1]);
-      var name = 'Skill ' + id;
-      var el = u;
-      while (el && el.tagName !== 'TR') el = el.parentElement;
-      if (el) {
-        var a = el.querySelector('td > a');
-        if (a) name = a.textContent.trim();
-      }
+      var a = tr.querySelector('td > a');
       var get = function (pfx) {
         var el = document.getElementById(pfx + id);
         return el ? el.textContent.replace(/\u00a0/g, ' ').trim() : '';
       };
-      skills.push({
+      currentCat.skills.push({
         id:      id,
-        name:    name,
+        name:    a ? a.textContent.trim() : 'Skill ' + id,
         rank:    get('amt_skill'),
         cost:    get('sklcost'),
         recover: get('skrcost'),
@@ -240,7 +244,7 @@
       });
     });
 
-    if (!skills.length) { alert('TurboTrainer: no skills found on this page.'); return; }
+    if (!categories.length) { alert('TurboTrainer: no skills found on this page.'); return; }
 
     var M = 'font-family:Courier New,monospace;box-sizing:border-box;';
 
@@ -355,7 +359,14 @@
     });
     list.appendChild(hrow);
 
-    skills.forEach(function (sk) {
+    categories.forEach(function (cat) {
+      var catRow = document.createElement('div');
+      catRow.style.cssText = M + 'padding:10px 20px 4px;font-size:10px;letter-spacing:3px;'
+        + 'text-transform:uppercase;color:#c8a84a;margin-top:6px;';
+      catRow.textContent = cat.name;
+      list.appendChild(catRow);
+
+      cat.skills.forEach(function (sk) {
       var row = document.createElement('div');
       row.style.cssText = ROWBASE + 'border-bottom:1px solid #1a1a1a;';
       row.onmouseover = function () { row.style.background = '#1a1a1a'; };
@@ -421,7 +432,8 @@
       row.appendChild(nameEl);
 
       list.appendChild(row);
-    });
+      }); // end cat.skills
+    }); // end categories
     ov.appendChild(list);
 
     var ftr = document.createElement('div');
