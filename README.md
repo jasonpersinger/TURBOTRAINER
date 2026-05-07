@@ -32,7 +32,7 @@ Adds bulk training controls to the GemStone IV skill trainer page so you don't h
 - **set to `[n]` go** — type any rank number and jump straight to it (Enter or click go)
 - **± `[n]` + −** — type a number and add or subtract that many ranks
 - **0** — zero out the skill
-- **1x / 2x / 3x** — set to 1×, 2×, or 3× your current training level (auto-detected from the page, clamped to each skill's max)
+- **1x / 2x / 3x** — set to 1×, 2×, or 3× your character's per-level training increment (derived from your skill caps, clamped to each skill's max)
 - **max** — set to the skill's maximum allowed ranks
 
 5. Submit your training as normal when you're done
