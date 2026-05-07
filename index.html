@@ -461,6 +461,89 @@
       row.appendChild(nameEl);
 
       list.appendChild(row);
+
+      var maxRank = parseInt(sk.max) || 0;
+
+      var subRow = document.createElement('div');
+      subRow.style.cssText = M + 'display:flex;align-items:center;flex-wrap:wrap;gap:5px;'
+        + 'padding:4px 20px 6px;border-bottom:1px solid #1e1e1e;background:#111;';
+      subRow.onmouseover = function () { subRow.style.background = '#161616'; };
+      subRow.onmouseout  = function () { subRow.style.background = '#111'; };
+
+      // set to [input] go
+      var setLbl = document.createElement('span');
+      setLbl.textContent = 'set to';
+      setLbl.style.cssText = ILBL;
+      subRow.appendChild(setLbl);
+
+      var setInput = document.createElement('input');
+      setInput.type = 'text';
+      setInput.style.cssText = IINPUT;
+      setInput.placeholder = '—';
+      subRow.appendChild(setInput);
+
+      var goBtn = document.createElement('button');
+      goBtn.textContent = 'go';
+      goBtn.type = 'button';
+      goBtn.style.cssText = IBTN;
+      goBtn.addEventListener('click', function () {
+        var v = parseInt(setInput.value);
+        if (!isNaN(v)) { setSkillTo(sk.id, v, maxRank); setInput.value = ''; }
+      });
+      setInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') goBtn.click();
+      });
+      subRow.appendChild(goBtn);
+
+      var sep1 = document.createElement('span');
+      sep1.textContent = '|';
+      sep1.style.cssText = ISEP;
+      subRow.appendChild(sep1);
+
+      // ± [input] + −
+      var deltaLbl = document.createElement('span');
+      deltaLbl.textContent = '±';
+      deltaLbl.style.cssText = ILBL;
+      subRow.appendChild(deltaLbl);
+
+      var deltaInput = document.createElement('input');
+      deltaInput.type = 'text';
+      deltaInput.style.cssText = IINPUT;
+      deltaInput.placeholder = '—';
+      subRow.appendChild(deltaInput);
+
+      [1, -1].forEach(function (sign) {
+        var b = document.createElement('button');
+        b.textContent = sign > 0 ? '+' : '−';
+        b.type = 'button';
+        b.style.cssText = IBTN;
+        b.addEventListener('click', function () {
+          var v = parseInt(deltaInput.value);
+          if (!isNaN(v)) {
+            var src = document.getElementById('amt_skill' + sk.id);
+            var cur = src ? (parseInt(src.textContent.replace(/ /g, ' ').trim()) || 0) : 0;
+            setSkillTo(sk.id, cur + sign * v, maxRank);
+          }
+        });
+        subRow.appendChild(b);
+      });
+
+      var sep2 = document.createElement('span');
+      sep2.textContent = '|';
+      sep2.style.cssText = ISEP;
+      subRow.appendChild(sep2);
+
+      // 0, 1x, 2x, 3x, max
+      [['0', 0], ['1x', unit], ['2x', unit * 2], ['3x', unit * 3], ['max', maxRank]].forEach(function (pair) {
+        var b = document.createElement('button');
+        b.textContent = pair[0];
+        b.type = 'button';
+        b.style.cssText = IBTN;
+        b.addEventListener('click', function () { setSkillTo(sk.id, pair[1], maxRank); });
+        subRow.appendChild(b);
+      });
+
+      list.appendChild(subRow);
       });
     });
     ov.appendChild(list);
