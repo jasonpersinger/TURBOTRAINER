@@ -257,7 +257,7 @@
 
     var setSkillTo = function (id, target, maxRank) {
       var src = document.getElementById('amt_skill' + id);
-      var current = src ? (parseInt(src.textContent.replace(/ /g, ' ').trim()) || 0) : 0;
+      var current = src ? (parseInt(src.textContent.replace(/\u00a0/g, ' ').trim()) || 0) : 0;
       if (maxRank > 0) target = Math.min(target, maxRank);
       target = Math.max(0, Math.round(target));
       if (target > current) {
