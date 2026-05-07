@@ -246,6 +246,30 @@
 
     if (!categories.length) { alert('TurboTrainer: no skills found on this page.'); return; }
 
+    var unit = Infinity;
+    categories.forEach(function (cat) {
+      cat.skills.forEach(function (sk) {
+        var m = parseInt(sk.max);
+        if (m > 0) unit = Math.min(unit, m);
+      });
+    });
+    if (!isFinite(unit) || unit <= 0) unit = 1;
+
+    var setSkillTo = function (id, target, maxRank) {
+      var src = document.getElementById('amt_skill' + id);
+      var current = src ? (parseInt(src.textContent.replace(/ /g, ' ').trim()) || 0) : 0;
+      if (maxRank > 0) target = Math.min(target, maxRank);
+      target = Math.max(0, Math.round(target));
+      if (target > current) {
+        for (var i = current; i < target; i++) upskill(id);
+      } else if (target < current) {
+        for (var i = current; i > target; i--) downskill(id);
+      }
+      var dst = document.getElementById('tt-rank-' + id);
+      if (src && dst) dst.textContent = src.textContent.trim();
+      refreshPoints();
+    };
+
     var M = 'font-family:Courier New,monospace;box-sizing:border-box;';
 
     var ov = document.createElement('div');
@@ -347,6 +371,11 @@
     };
 
     var ROWBASE = M + 'display:flex;align-items:center;gap:10px;padding:6px 20px;';
+
+    var IBTN   = M + 'background:#181818;border:1px solid #2e2e2e;color:#666;font-size:10px;padding:2px 8px;cursor:pointer;letter-spacing:1px;';
+    var IINPUT = M + 'width:44px;background:#1a1a1a;border:1px solid #333;color:#aaa;font-size:11px;padding:2px 4px;text-align:center;';
+    var ISEP   = 'color:#2a2a2a;font-size:13px;margin:0 4px;user-select:none;';
+    var ILBL   = M + 'color:#444;font-size:10px;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;';
 
     var hrow = document.createElement('div');
     hrow.style.cssText = ROWBASE + 'border-bottom:1px solid #2e2e2e;background:#1a1a1a;position:sticky;top:0;';
