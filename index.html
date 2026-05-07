@@ -267,7 +267,7 @@
         for (var i = current; i > target; i--) downskill(id);
       }
       var dst = document.getElementById('tt-rank-' + id);
-      if (src && dst) dst.textContent = src.textContent.trim();
+      if (src && dst) dst.textContent = src.textContent.replace(/\u00a0/g, ' ').trim();
       refreshPoints();
     };
 
@@ -405,7 +405,7 @@
       var refresh = function () {
         var src = document.getElementById('amt_skill' + sk.id);
         var dst = document.getElementById('tt-rank-' + sk.id);
-        if (src && dst) dst.textContent = src.textContent.trim();
+        if (src && dst) dst.textContent = src.textContent.replace(/\u00a0/g, ' ').trim();
         refreshPoints();
       };
 
@@ -540,7 +540,7 @@
         b.textContent = pair[0];
         b.type = 'button';
         b.style.cssText = IBTN;
-        b.addEventListener('click', function () { setSkillTo(sk.id, pair[1], maxRank); });
+        b.addEventListener('click', function () { if (pair[0] !== 'max' || maxRank > 0) setSkillTo(sk.id, pair[1], maxRank); });
         subRow.appendChild(b);
       });
 
