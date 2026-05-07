@@ -521,7 +521,7 @@
           var v = parseInt(deltaInput.value);
           if (!isNaN(v)) {
             var src = document.getElementById('amt_skill' + sk.id);
-            var cur = src ? (parseInt(src.textContent.replace(/ /g, ' ').trim()) || 0) : 0;
+            var cur = src ? (parseInt(src.textContent.replace(/\u00a0/g, ' ').trim()) || 0) : 0;
             setSkillTo(sk.id, cur + sign * v, maxRank);
           }
         });
