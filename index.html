@@ -570,7 +570,7 @@
   }
 
   document.getElementById('bookmarklet').href =
-    'javascript:(' + turboTrainer.toString() + ')();void 0;';
+    'javascript:' + encodeURIComponent('(' + turboTrainer.toString() + ')();void 0;');
 </script>
 </body>
 </html>
