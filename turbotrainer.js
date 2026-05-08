@@ -1,5 +1,5 @@
 (function () {
-var TURBOTRAINER_VERSION = 'v0.2.1';
+var TURBOTRAINER_VERSION = 'v0.3.0';
 
 function turboTrainer() {
   if (document.getElementById('tt-overlay')) {
@@ -64,6 +64,18 @@ function turboTrainer() {
   };
 
   var M = 'font-family:Courier New,monospace;box-sizing:border-box;';
+  var density = (function () {
+    try { return localStorage.getItem('tt-density') || 'comfortable'; }
+    catch (e) { return 'comfortable'; }
+  })();
+  var compact = density === 'compact';
+  var pagePad = compact ? '16px' : '24px';
+  var blockGap = compact ? '8px' : '12px';
+  var topPad = compact ? '8px 16px' : '12px 24px';
+  var controlPad = compact ? '8px 16px 10px' : '10px 24px 14px';
+  var primaryBtnPad = compact ? '6px 10px' : '8px 12px';
+  var quietBtnPad = compact ? '5px 9px' : '7px 11px';
+  var inputPad = compact ? '5px 7px' : '7px 8px';
 
   var ov = document.createElement('div');
   ov.id = 'tt-overlay';
@@ -102,6 +114,18 @@ function turboTrainer() {
   charEl.textContent = charInfo;
   charEl.style.cssText = 'font-size:12px;color:#9a9a9a;letter-spacing:1px;flex:1;text-align:right;min-width:220px;';
   hdrTop.appendChild(charEl);
+
+  var densityBtn = document.createElement('button');
+  densityBtn.textContent = compact ? 'comfortable' : 'compact';
+  densityBtn.type = 'button';
+  densityBtn.style.cssText = M + 'background:#202020;border:1px solid #444;color:#aaa;'
+    + 'font-size:12px;padding:7px 12px;cursor:pointer;letter-spacing:1px;';
+  densityBtn.addEventListener('click', function () {
+    try { localStorage.setItem('tt-density', compact ? 'comfortable' : 'compact'); } catch (e) {}
+    ov.remove();
+    turboTrainer();
+  });
+  hdrTop.appendChild(densityBtn);
 
   var closeBtn = document.createElement('button');
   closeBtn.textContent = 'x  close';
@@ -153,47 +177,79 @@ function turboTrainer() {
   };
 
   var list = document.createElement('div');
-  list.style.cssText = 'flex:1;overflow:auto;background:#121212;';
+  list.style.cssText = 'flex:1;overflow:auto;background:#101010;padding-bottom:' + blockGap + ';';
 
-  var COL = {
-    name:    'flex:1;min-width:220px;',
-    cost:    'width:72px;text-align:center;',
-    rank:    'width:72px;text-align:center;',
-    max:     'width:72px;text-align:center;',
-    recover: 'width:82px;text-align:center;',
-    btns:    'width:150px;display:flex;gap:6px;flex-shrink:0;align-items:center;'
+  var ILBL = M + 'color:#777;font-size:11px;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;';
+  var IINPUT = M + 'width:66px;background:#1c1c1c;border:1px solid #4b4b4b;color:#e0e0e0;'
+    + 'font-size:12px;padding:' + inputPad + ';text-align:center;';
+  var QUIET_BTN = M + 'min-width:42px;background:#202020;border:1px solid #444;color:#bbb;'
+    + 'font-size:12px;padding:' + quietBtnPad + ';cursor:pointer;letter-spacing:1px;';
+
+  var makeMeta = function (label, value, id, strong) {
+    var wrap = document.createElement('span');
+    wrap.style.cssText = M + 'display:inline-flex;align-items:center;gap:6px;background:#101010;'
+      + 'border:1px solid #2c2c2c;padding:5px 9px;min-width:86px;justify-content:space-between;';
+    var key = document.createElement('span');
+    key.textContent = label;
+    key.style.cssText = 'color:#777;font-size:10px;letter-spacing:1px;text-transform:uppercase;';
+    var val = document.createElement('span');
+    if (id) val.id = id;
+    val.textContent = value;
+    val.style.cssText = 'color:' + (strong ? '#f0f0f0' : '#b0b0b0') + ';font-size:13px;font-weight:' + (strong ? 'bold' : 'normal') + ';';
+    wrap.appendChild(key);
+    wrap.appendChild(val);
+    return wrap;
   };
 
-  var ROWBASE = M + 'display:flex;align-items:center;gap:14px;padding:10px 24px;min-height:50px;';
+  var makeGroup = function (label) {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = M + 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;';
+    var lbl = document.createElement('span');
+    lbl.textContent = label;
+    lbl.style.cssText = ILBL;
+    wrap.appendChild(lbl);
+    return wrap;
+  };
 
-  var IBTN   = M + 'min-width:42px;background:#202020;border:1px solid #444;color:#bbb;font-size:12px;padding:6px 10px;cursor:pointer;letter-spacing:1px;';
-  var IINPUT = M + 'width:64px;background:#1d1d1d;border:1px solid #4a4a4a;color:#ddd;font-size:12px;padding:6px 7px;text-align:center;';
-  var ISEP   = 'color:#3f3f3f;font-size:15px;margin:0 8px;user-select:none;';
-  var ILBL   = M + 'color:#777;font-size:11px;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;';
+  var makePrimaryButton = function (label, kind, onClick) {
+    var b = document.createElement('button');
+    b.textContent = label;
+    b.type = 'button';
+    b.style.cssText = M + 'min-width:48px;border:1px solid '
+      + (kind === 'reduce' ? '#9a3333' : '#d6b653')
+      + ';background:' + (kind === 'reduce' ? '#261111' : '#28210f')
+      + ';color:' + (kind === 'reduce' ? '#e07068' : '#e2c86a')
+      + ';font-size:12px;padding:' + primaryBtnPad + ';cursor:pointer;font-weight:bold;';
+    b.addEventListener('click', onClick);
+    return b;
+  };
 
-  var hrow = document.createElement('div');
-  hrow.style.cssText = ROWBASE + 'border-bottom:1px solid #363636;background:#1c1c1c;position:sticky;top:0;z-index:1;';
-  var HL = 'font-size:11px;letter-spacing:2px;color:#777;text-transform:uppercase;';
-  [['name','Skill Name'],['cost','Cost'],['max','Max'],['recover','Recover'],['btns','Reduce'],['rank','Rank'],['btns','Train']].forEach(function(pair) {
-    var h = document.createElement('span');
-    h.textContent = pair[1];
-    h.style.cssText = HL + COL[pair[0]];
-    hrow.appendChild(h);
-  });
-  list.appendChild(hrow);
+  var makeQuietButton = function (label, onClick) {
+    var b = document.createElement('button');
+    b.textContent = label;
+    b.type = 'button';
+    b.style.cssText = QUIET_BTN;
+    b.addEventListener('click', onClick);
+    return b;
+  };
 
   categories.forEach(function (cat) {
     var catRow = document.createElement('div');
-    catRow.style.cssText = M + 'padding:18px 24px 8px;font-size:11px;letter-spacing:3px;'
-      + 'text-transform:uppercase;color:#d6b653;margin-top:8px;background:#121212;';
+    catRow.style.cssText = M + 'padding:14px ' + pagePad + ' 10px;font-size:12px;letter-spacing:3px;'
+      + 'text-transform:uppercase;color:#e0c05a;margin-top:' + blockGap + ';background:#1a1a1a;'
+      + 'border-top:1px solid #343434;border-bottom:1px solid #343434;position:sticky;top:0;z-index:2;';
     catRow.textContent = cat.name;
     list.appendChild(catRow);
 
-    cat.skills.forEach(function (sk) {
-    var row = document.createElement('div');
-    row.style.cssText = ROWBASE + 'border-top:1px solid #292929;background:#181818;';
-    row.onmouseover = function () { row.style.background = '#202020'; };
-    row.onmouseout  = function () { row.style.background = '#181818'; };
+    cat.skills.forEach(function (sk, idx) {
+    var baseBg = idx % 2 === 0 ? '#171717' : '#141414';
+    var hoverBg = '#202020';
+    var maxRank = parseInt(sk.max) || 0;
+
+    var block = document.createElement('div');
+    block.style.cssText = M + 'background:' + baseBg + ';border-bottom:1px solid #303030;';
+    block.onmouseover = function () { block.style.background = hoverBg; };
+    block.onmouseout  = function () { block.style.background = baseBg; };
 
     var refresh = function () {
       var src = document.getElementById('amt_skill' + sk.id);
@@ -202,154 +258,115 @@ function turboTrainer() {
       refreshPoints();
     };
 
+    var topLine = document.createElement('div');
+    topLine.style.cssText = M + 'display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:' + topPad + ';';
+
     var nameEl = document.createElement('span');
     nameEl.textContent = sk.name;
-    nameEl.style.cssText = 'font-size:14px;color:#ddd;font-weight:bold;' + COL.name;
-    row.appendChild(nameEl);
+    nameEl.style.cssText = 'flex:1;min-width:240px;font-size:' + (compact ? '14px' : '15px')
+      + ';line-height:1.35;color:#e0e0e0;font-weight:bold;';
+    topLine.appendChild(nameEl);
 
-    var costEl = document.createElement('span');
-    costEl.textContent = sk.cost;
-    costEl.style.cssText = 'font-size:13px;color:#9a9a9a;' + COL.cost;
-    row.appendChild(costEl);
+    topLine.appendChild(makeMeta('Rank', sk.rank, 'tt-rank-' + sk.id, true));
+    topLine.appendChild(makeMeta('Cost', sk.cost, null, false));
+    topLine.appendChild(makeMeta('Max', sk.max, null, false));
+    topLine.appendChild(makeMeta('Recover', sk.recover, null, false));
+    block.appendChild(topLine);
 
-    var maxEl = document.createElement('span');
-    maxEl.textContent = sk.max;
-    maxEl.style.cssText = 'font-size:13px;color:#8a8a8a;' + COL.max;
-    row.appendChild(maxEl);
+    var controlLine = document.createElement('div');
+    controlLine.style.cssText = M + 'display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:' + controlPad
+      + ';border-top:1px solid #242424;background:rgba(0,0,0,0.18);';
 
-    var recEl = document.createElement('span');
-    recEl.textContent = sk.recover;
-    recEl.style.cssText = 'font-size:13px;color:#9a9a9a;' + COL.recover;
-    row.appendChild(recEl);
-
-    var minusGrp = document.createElement('div');
-    minusGrp.style.cssText = COL.btns;
+    var minusGrp = makeGroup('Reduce');
     [10, 5, 1].forEach(function (n) {
-      var b = document.createElement('button');
-      b.textContent = '-' + n;
-      b.type = 'button';
-      b.style.cssText = M + 'min-width:44px;background:#261111;border:1px solid #9a3333;color:#e07068;'
-        + 'font-size:12px;padding:7px 10px;cursor:pointer;font-weight:bold;';
-      b.addEventListener('click', function () { for (var i = 0; i < n; i++) downskill(sk.id); refresh(); });
-      minusGrp.appendChild(b);
+      minusGrp.appendChild(makePrimaryButton('-' + n, 'reduce', function () {
+        for (var i = 0; i < n; i++) downskill(sk.id);
+        refresh();
+      }));
     });
-    row.appendChild(minusGrp);
+    controlLine.appendChild(minusGrp);
 
-    var rankEl = document.createElement('span');
-    rankEl.id = 'tt-rank-' + sk.id;
-    rankEl.textContent = sk.rank;
-    rankEl.style.cssText = 'font-size:15px;color:#f0f0f0;font-weight:bold;' + COL.rank;
-    row.appendChild(rankEl);
-
-    var plusGrp = document.createElement('div');
-    plusGrp.style.cssText = COL.btns;
+    var plusGrp = makeGroup('Train');
     [1, 5, 10].forEach(function (n) {
-      var b = document.createElement('button');
-      b.textContent = '+' + n;
-      b.type = 'button';
-      b.style.cssText = M + 'min-width:44px;background:#28210f;border:1px solid #d6b653;color:#e2c86a;'
-        + 'font-size:12px;padding:7px 10px;cursor:pointer;font-weight:bold;';
-      b.addEventListener('click', function () { for (var i = 0; i < n; i++) upskill(sk.id); refresh(); });
-      plusGrp.appendChild(b);
+      plusGrp.appendChild(makePrimaryButton('+' + n, 'train', function () {
+        for (var i = 0; i < n; i++) upskill(sk.id);
+        refresh();
+      }));
     });
-    row.appendChild(plusGrp);
+    controlLine.appendChild(plusGrp);
 
-    list.appendChild(row);
+    var advanced = document.createElement('div');
+    advanced.style.cssText = M + 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-left:auto;'
+      + 'background:#111;border:1px solid #282828;padding:' + (compact ? '6px 8px' : '8px 10px') + ';';
 
-    var maxRank = parseInt(sk.max) || 0;
-
-    var subRow = document.createElement('div');
-    subRow.style.cssText = M + 'display:flex;align-items:center;flex-wrap:wrap;gap:8px;'
-      + 'padding:8px 24px 12px;border-bottom:1px solid #303030;background:#101010;';
-    subRow.onmouseover = function () { subRow.style.background = '#151515'; };
-    subRow.onmouseout  = function () { subRow.style.background = '#101010'; };
-
-    // set to [input] go
     var setLbl = document.createElement('span');
     setLbl.textContent = 'set rank';
     setLbl.style.cssText = ILBL;
-    subRow.appendChild(setLbl);
+    advanced.appendChild(setLbl);
 
     var setInput = document.createElement('input');
     setInput.type = 'text';
     setInput.style.cssText = IINPUT;
     setInput.placeholder = '\u2014';
-    subRow.appendChild(setInput);
+    advanced.appendChild(setInput);
 
-    var goBtn = document.createElement('button');
-    goBtn.textContent = 'go';
-    goBtn.type = 'button';
-    goBtn.style.cssText = IBTN;
-    goBtn.addEventListener('click', function () {
+    var goBtn = makeQuietButton('go', function () {
       var v = parseInt(setInput.value);
       if (!isNaN(v)) { setSkillTo(sk.id, v, maxRank); setInput.value = ''; }
     });
     setInput.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') goBtn.click();
     });
-    subRow.appendChild(goBtn);
+    advanced.appendChild(goBtn);
 
-    var sep1 = document.createElement('span');
-    sep1.textContent = '|';
-    sep1.style.cssText = ISEP;
-    subRow.appendChild(sep1);
-
-    // +/- [input] + -
     var deltaLbl = document.createElement('span');
     deltaLbl.textContent = 'change by';
     deltaLbl.style.cssText = ILBL;
-    subRow.appendChild(deltaLbl);
+    advanced.appendChild(deltaLbl);
 
     var deltaInput = document.createElement('input');
     deltaInput.type = 'text';
     deltaInput.style.cssText = IINPUT;
     deltaInput.placeholder = '\u2014';
-    subRow.appendChild(deltaInput);
+    advanced.appendChild(deltaInput);
 
     [1, -1].forEach(function (sign) {
-      var b = document.createElement('button');
-      b.textContent = sign > 0 ? '+' : '\u2212';
-      b.type = 'button';
-      b.style.cssText = IBTN;
-      b.addEventListener('click', function () {
+      advanced.appendChild(makeQuietButton(sign > 0 ? '+' : '\u2212', function () {
         var v = parseInt(deltaInput.value);
         if (!isNaN(v)) {
           var src = document.getElementById('amt_skill' + sk.id);
           var cur = src ? (parseInt(src.textContent.replace(/\u00a0/g, ' ').trim()) || 0) : 0;
           setSkillTo(sk.id, cur + sign * v, maxRank);
         }
-      });
-      subRow.appendChild(b);
+      }));
     });
 
-    var sep2 = document.createElement('span');
-    sep2.textContent = '|';
-    sep2.style.cssText = ISEP;
-    subRow.appendChild(sep2);
-
-    // 0, 1x, 2x, 3x, max
     var quickLbl = document.createElement('span');
     quickLbl.textContent = 'quick set';
     quickLbl.style.cssText = ILBL;
-    subRow.appendChild(quickLbl);
+    advanced.appendChild(quickLbl);
 
     [['0', 0], ['1x', unit], ['2x', unit * 2], ['3x', unit * 3], ['max', maxRank]].forEach(function (pair) {
-      var b = document.createElement('button');
-      b.textContent = pair[0];
-      b.type = 'button';
-      b.style.cssText = IBTN;
-      b.addEventListener('click', function () { if (pair[0] !== 'max' || maxRank > 0) setSkillTo(sk.id, pair[1], maxRank); });
-      subRow.appendChild(b);
+      advanced.appendChild(makeQuietButton(pair[0], function () {
+        if (pair[0] !== 'max' || maxRank > 0) setSkillTo(sk.id, pair[1], maxRank);
+      }));
     });
 
-    list.appendChild(subRow);
+    controlLine.appendChild(advanced);
+    block.appendChild(controlLine);
+    list.appendChild(block);
     });
   });
   ov.appendChild(list);
 
   var ftr = document.createElement('div');
-  ftr.style.cssText = M + 'padding:14px 20px;border-top:1px solid #2e2e2e;'
-    + 'display:flex;justify-content:flex-end;flex-shrink:0;';
+  ftr.style.cssText = M + 'padding:14px 24px;border-top:1px solid #2e2e2e;'
+    + 'display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0;background:#181818;flex-wrap:wrap;';
+
+  var versionEl = document.createElement('span');
+  versionEl.textContent = TURBOTRAINER_VERSION + '  \u00b7  ' + density;
+  versionEl.style.cssText = 'color:#666;font-size:11px;letter-spacing:1px;';
+  ftr.appendChild(versionEl);
 
   var submitBtn = document.createElement('button');
   submitBtn.textContent = 'Submit Training';
