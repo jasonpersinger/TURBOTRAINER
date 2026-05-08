@@ -2,99 +2,57 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-const htmlPath = path.join(__dirname, '..', 'index.html');
-const html = fs.readFileSync(htmlPath, 'utf8');
+const rootDir = path.join(__dirname, '..');
+const html = fs.readFileSync(path.join(rootDir, 'index.html'), 'utf8');
+const trainerSource = fs.readFileSync(path.join(rootDir, 'turbotrainer.js'), 'utf8');
 
-function extractTurboTrainer(source) {
-  const start = source.indexOf('  function turboTrainer()');
-  if (start === -1) {
-    throw new Error('turboTrainer function not found');
-  }
+new vm.Script(trainerSource, { filename: 'turbotrainer.js' });
 
-  const braceStart = source.indexOf('{', start);
-  let depth = 0;
-  let end = -1;
-  let inString = null;
-  let escaped = false;
-  let inLineComment = false;
-  let inBlockComment = false;
-
-  for (let i = braceStart; i < source.length; i += 1) {
-    const ch = source[i];
-    const next = source[i + 1];
-
-    if (inLineComment) {
-      if (ch === '\n') inLineComment = false;
-      continue;
-    }
-
-    if (inBlockComment) {
-      if (ch === '*' && next === '/') {
-        inBlockComment = false;
-        i += 1;
-      }
-      continue;
-    }
-
-    if (inString) {
-      if (escaped) {
-        escaped = false;
-        continue;
-      }
-      if (ch === '\\') {
-        escaped = true;
-        continue;
-      }
-      if (ch === inString) inString = null;
-      continue;
-    }
-
-    if (ch === '/' && next === '/') {
-      inLineComment = true;
-      i += 1;
-      continue;
-    }
-
-    if (ch === '/' && next === '*') {
-      inBlockComment = true;
-      i += 1;
-      continue;
-    }
-
-    if (ch === '\'' || ch === '"' || ch === '`') {
-      inString = ch;
-      continue;
-    }
-
-    if (ch === '{') depth += 1;
-    if (ch === '}') {
-      depth -= 1;
-      if (depth === 0) {
-        end = i + 1;
-        break;
-      }
-    }
-  }
-
-  if (end === -1) {
-    throw new Error('turboTrainer function did not close');
-  }
-
-  return source.slice(start, end).trim();
+const scriptMatch = html.match(/<script>([\s\S]*?)<\/script>\s*<\/body>/);
+if (!scriptMatch) {
+  throw new Error('landing page bookmarklet script not found');
 }
 
-const functionSource = extractTurboTrainer(html);
-const bookmarkletSource = `(${functionSource})();void 0;`;
-const bookmarkletHref = `javascript:${encodeURIComponent(bookmarkletSource)}`;
-const bookmarkletUrl = new URL(bookmarkletHref);
+let href = '';
+const element = {};
+const sandbox = {
+  document: {
+    getElementById(id) {
+      if (id !== 'bookmarklet') {
+        throw new Error(`unexpected element lookup: ${id}`);
+      }
+      return element;
+    }
+  }
+};
 
-new vm.Script(`(${functionSource});`);
-new vm.Script(decodeURIComponent(bookmarkletUrl.pathname));
+Object.defineProperty(element, 'href', {
+  get() {
+    return href;
+  },
+  set(value) {
+    href = value;
+  }
+});
 
-if (bookmarkletUrl.hash) {
-  throw new Error(`Generated bookmarklet has a URL fragment: ${bookmarkletUrl.hash}`);
+vm.createContext(sandbox);
+new vm.Script(scriptMatch[1], { filename: 'index.html inline script' }).runInContext(sandbox);
+
+if (!href.startsWith('javascript:')) {
+  throw new Error(`bookmarklet href is not javascript: ${href}`);
 }
 
-console.log('turboTrainer source parses');
-console.log(`bookmarklet length: ${bookmarkletHref.length}`);
-console.log('bookmarklet URL has no fragment');
+if (href.length > 1000) {
+  throw new Error(`bookmarklet is too long: ${href.length} chars`);
+}
+
+const url = new URL(href);
+if (url.hash) {
+  throw new Error(`bookmarklet URL has a fragment: ${url.hash}`);
+}
+
+new vm.Script(href.slice('javascript:'.length), { filename: 'bookmarklet.js' });
+
+console.log('turbotrainer.js parses');
+console.log(`bookmarklet length: ${href.length}`);
+console.log('bookmarklet parses and has no fragment');
