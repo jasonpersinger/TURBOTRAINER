@@ -480,7 +480,7 @@
       var setInput = document.createElement('input');
       setInput.type = 'text';
       setInput.style.cssText = IINPUT;
-      setInput.placeholder = '—';
+      setInput.placeholder = '\u2014';
       subRow.appendChild(setInput);
 
       var goBtn = document.createElement('button');
@@ -503,19 +503,19 @@
 
       // ± [input] + −
       var deltaLbl = document.createElement('span');
-      deltaLbl.textContent = '±';
+      deltaLbl.textContent = '\u00b1';
       deltaLbl.style.cssText = ILBL;
       subRow.appendChild(deltaLbl);
 
       var deltaInput = document.createElement('input');
       deltaInput.type = 'text';
       deltaInput.style.cssText = IINPUT;
-      deltaInput.placeholder = '—';
+      deltaInput.placeholder = '\u2014';
       subRow.appendChild(deltaInput);
 
       [1, -1].forEach(function (sign) {
         var b = document.createElement('button');
-        b.textContent = sign > 0 ? '+' : '−';
+        b.textContent = sign > 0 ? '+' : '\u2212';
         b.type = 'button';
         b.style.cssText = IBTN;
         b.addEventListener('click', function () {
